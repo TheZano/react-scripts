@@ -73,6 +73,8 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
 
 const hasJsxRuntime = (() => {
   if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
@@ -107,7 +109,7 @@ module.exports = function (webpackEnv) {
   const shouldUseReactRefresh = env.raw.FAST_REFRESH;
 
   // common function to get style loaders
-  const getStyleLoaders = (cssOptions, preProcessor) => {
+  const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -163,6 +165,7 @@ module.exports = function (webpackEnv) {
           loader: require.resolve(preProcessor),
           options: {
             sourceMap: true,
+            ...preProcessorOptions,
           },
         }
       );
@@ -575,6 +578,24 @@ module.exports = function (webpackEnv) {
                   },
                 },
                 'sass-loader'
+              ),
+            },
+            {
+              test: lessRegex,
+              exclude: lessModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 3,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                },
+                'less-loader',
+                {
+                  lessOptions: {
+                    javascriptEnabled: true,
+                  },
+                }
               ),
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.
