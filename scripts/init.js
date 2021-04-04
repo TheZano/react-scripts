@@ -405,7 +405,7 @@ module.exports = function (
     );
   }
   console.log();
-  console.log('Happy hacking!');
+  console.log(chalk.green('Happy collaborating @pandatech! 🐼🎉'));
 };
 
 function isReactInstalled(appPackage) {
